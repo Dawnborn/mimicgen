@@ -87,7 +87,7 @@ def create_env(
 
     # create environment
     env = EnvUtils.create_env_for_data_processing(
-        env_meta=env_meta,
+        env_meta=env_meta, # {'env_name': 'Square_D1', 'env_version': '1.4.1', 'type': 1, 'env_kwargs': {'has_renderer': False, 'has_offscreen_renderer': True, 'ignore_done': True, 'use_object_obs': True, 'use_camera_obs': True, 'control_freq': 20, 'controller_configs': {...}, 'robots': [...], 'camera_depths': False, 'camera_heights': 84, 'camera_widths': 84, 'reward_shaping': False, 'camera_names': [...], 'render_gpu_device_id': 0}}
         env_class=env_class,
         camera_names=camera_names, 
         camera_height=camera_height, 

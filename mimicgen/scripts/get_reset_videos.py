@@ -19,7 +19,7 @@ import mimicgen
 
 
 # base output folder
-OUTPUT_FOLDER = "/tmp/mimicgen_reset_vids"
+OUTPUT_FOLDER = "/home/gp25/git/ws_datagen/mimicgen/output/mimicgen_reset_vids"
 
 # number of resets to view per task
 NUM_RESETS = 10
@@ -170,6 +170,8 @@ if __name__ == "__main__":
         os.makedirs(output_folder)
 
     for d in DATASET_INFOS:
+        if d["name"] != "pick_place":
+            continue
         assert "envs" in d
         robot_names = ["Panda"] * len(d["envs"])
         need_robot_ext = False

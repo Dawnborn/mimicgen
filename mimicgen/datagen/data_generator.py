@@ -84,14 +84,51 @@ class DataGenerator(object):
         Apply random offsets to sample subtask boundaries according to the task spec.
         Recall that each demonstration is segmented into a set of subtask segments, and the
         end index of each subtask can have a random offset.
+
+        Randomize the boundaries of subtasks in task demonstrations by applying random offsets to subtask end indices.
+
+        Each demonstration is segmented into multiple subtasks, with each subtask having a start and end index.
+        This function adjusts the end indices of subtasks (except the last one) according to the task specification,
+        and ensures the boundaries remain valid.
+
+        The task specification (`task_spec`) defines a range for the random offset that can be applied to the end index
+        of each subtask. The random offset is added to the end index of the current subtask and also set as the start
+        index for the next subtask to ensure continuity.
+
+        Key Steps:
+            1. Retrieve initial subtask start and end indices (`src_subtask_indices`).
+            2. For each subtask (except the last one), sample random offsets based on `task_spec`.
+            3. Update the current subtask's end index and set it as the next subtask's start index.
+            4. Perform assertions to ensure:
+                - No subtask has a non-positive duration (i.e., `end > start`).
+                - Subtask indices strictly increase across all subtasks.
+                - Subtasks remain in order when flattened.
+
+        Returns:
+            np.ndarray: Randomized subtask boundaries of shape (N, S, 2), where:
+                - N: Number of demonstrations.
+                - S: Number of subtasks.
+                - 2: Start and end indices for each subtask.
+
+        Raises:
+            AssertionError: If any subtask has non-positive duration, subtask indices are not strictly increasing,
+                            or subtasks are not in order.
+
+        Example:
+            >>> task_spec = [{"subtask_term_offset_range": [-2, 2]}, {"subtask_term_offset_range": [0, 3]}]
+            >>> self.src_subtask_indices = [[[0, 10], [10, 20], [20, 30]]]
+            >>> self.task_spec = task_spec
+            >>> randomized_indices = self.randomize_subtask_boundaries()
+            >>> print(randomized_indices)
+            [[[0, 11], [11, 23], [23, 30]]]
         """
 
-        # initial subtask start and end indices - shape (N, S, 2)
+        # initial subtask start and end indices - shape (N, S, 2) # (Number of demonstrations, Number of subtasks, start and end indices)
         src_subtask_indices = np.array(self.src_subtask_indices)
 
         # for each subtask (except last one), sample all end offsets at once for each demonstration
         # add them to subtask end indices, and then set them as the start indices of next subtask too
-        for i in range(src_subtask_indices.shape[1] - 1):
+        for i in range(src_subtask_indices.shape[1] - 1): ## iterate over subtasks
             end_offsets = np.random.randint(
                 low=self.task_spec[i]["subtask_term_offset_range"][0],
                 high=self.task_spec[i]["subtask_term_offset_range"][1] + 1,
@@ -240,7 +277,7 @@ class DataGenerator(object):
 
         # sample new task instance
         env.reset()
-        new_initial_state = env.get_state()
+        new_initial_state = env.get_state() # {'model':..., 'states':...} - states is a numpy array of shape (N,)
 
         # sample new subtask boundaries
         all_subtask_inds = self.randomize_subtask_boundaries() # shape [N, S, 2], last dim is start and end action lengths

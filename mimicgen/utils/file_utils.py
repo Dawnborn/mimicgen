@@ -165,7 +165,7 @@ def parse_source_dataset(
 
     datagen_infos = []
     subtask_indices = []
-    for ind in tqdm(range(len(demo_keys))):
+    for ind in tqdm(range(len(demo_keys))): # ['demo_0', 'demo_1', 'demo_2', 'demo_3', 'demo_4', 'demo_5', 'demo_6', 'demo_7', 'demo_8', 'demo_9']
         ep = demo_keys[ind]
         ep_grp = f["data/{}".format(ep)]
 
@@ -180,7 +180,7 @@ def parse_source_dataset(
         )
         datagen_infos.append(ep_datagen_info_obj)
 
-        # parse subtask indices using subtask termination signals
+        # parse subtask indices using subtask termination signals, ep_subtask_indices stores the start and end indices of each subtasks in the episode
         ep_subtask_indices = []
         prev_subtask_term_ind = 0
         for subtask_ind in range(len(subtask_term_signals)):

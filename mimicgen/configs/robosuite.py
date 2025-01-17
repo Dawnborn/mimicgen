@@ -471,6 +471,30 @@ class NutAssembly_Config(MG_Config):
         )
         self.task.task_spec.do_not_lock_keys()
 
+class BinPicking_Config(MG_Config):
+    """
+    
+    """
+
+    NAME = "bin_picking"
+    TYPE = "robosuite"
+
+    def task_config(self):
+
+        self.task.task_spec.subtask = dict(
+            object_ref="target", 
+            subtask_term_signal="grasp",
+            subtask_term_offset_range=(10, 20),
+            selection_strategy="nearest_neighbor_object",
+            selection_strategy_kwargs=dict(nn_k=3),
+            action_noise=0.05,
+            num_interpolation_steps=5,
+            num_fixed_steps=0,
+            apply_noise_during_interpolation=False,
+        )
+    
+        self.task.task_spec.do_not_lock_keys()
+
 
 class PickPlace_Config(MG_Config):
     """
